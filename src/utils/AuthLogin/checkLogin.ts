@@ -9,17 +9,17 @@ export const checkLogin = (
   setCheckTokenEoP: React.Dispatch<React.SetStateAction<boolean>>,
   setShowNoiNouser: React.Dispatch<React.SetStateAction<NoiNoUser>>,
   noiNoUser: NoiNoUser,
-  setErrorLogin: React.Dispatch<React.SetStateAction<string>>,
+  setErrorEmOrPhone: React.Dispatch<React.SetStateAction<string>>,
+  setErrorPass:React.Dispatch<React.SetStateAction<string>>,
   setSuccessLogin: React.Dispatch<React.SetStateAction<boolean>>,
   setGetUser: React.Dispatch<React.SetStateAction<User>>
 ) => {
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
   const regexNumber = /^-?\d*$/;
-  console.log(value);
   if (type === 'emOrPhone') {
     if (!value) {
-      setErrorLogin('Vui lòng nhập Email hoặc Số điện thoại');
-      return console.log('rỗng');
+      setErrorEmOrPhone('Vui lòng nhập Email hoặc Số điện thoại');
+      
     }
     if (regexNumber.test(value)) {
       if (value.length === 10) {
@@ -30,17 +30,17 @@ export const checkLogin = (
         }
         setShowNoiNouser({ ...noiNoUser, check: true, text: `${value}` });
       } else {
-        setErrorLogin(
+        setErrorEmOrPhone(
           'Vui lòng nhập đúng số điện thoại theo quy định của Bộ Thông Tin & Truyền Thông (10 số)'
         );
       }
     } else {
       if (!regexEmail.test(value)) {
-        setErrorLogin('Email không đúng định dạng');
+        setErrorEmOrPhone('Email không đúng định dạng');
       } else {
         for (let i = 0; i < Users.length; i++) {
           if (Users[i].email === value) {
-            console.log('email true');
+           
             return setCheckTokenEoP(true);
           }
         }
@@ -49,7 +49,7 @@ export const checkLogin = (
     }
   } else {
     if (!value) {
-      setErrorLogin('Vui lòng nhập mật khẩu');
+      setErrorPass('Vui lòng nhập mật khẩu');
     } else {
       for (let i = 0; i < Users.length; i++) {
         if (Users[i].password === value) {
@@ -62,7 +62,7 @@ export const checkLogin = (
             username: Users[i].username,
           });
         } else {
-          setErrorLogin('Mật khẩu không chính xác');
+          setErrorPass('Mật khẩu không chính xác');
         }
       }
     }

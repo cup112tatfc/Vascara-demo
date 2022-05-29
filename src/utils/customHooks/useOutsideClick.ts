@@ -1,8 +1,12 @@
 import * as React from 'react';
 
-const useOutsideClick = (ref: any,tockchaned:number|null, onOutSideClick: (...args: any) => void) => {
-
+const useOutsideClick = (
+  ref: any,
+  tockchaned: number | null | undefined,
+  onOutSideClick: (...args: any) => void
+) => {
   React.useEffect(() => {
+    
     function handleClickOutSide(event: any) {
       if (ref.current && !ref.current.contains(event.target)) {
         onOutSideClick();
@@ -12,7 +16,7 @@ const useOutsideClick = (ref: any,tockchaned:number|null, onOutSideClick: (...ar
     return () => {
       document.removeEventListener('mousedown', handleClickOutSide);
     };
-  }, [ref,tockchaned]);
+  }, [ref, tockchaned]);
 };
 
 export default useOutsideClick;

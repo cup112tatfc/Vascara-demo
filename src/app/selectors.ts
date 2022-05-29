@@ -9,13 +9,16 @@ export const SlideProductSaleOffSelector = (state: RootState) =>
 export const productIdSelector = (state: RootState) => state.productSlice.productId;
 export const productSamesSelector = (state: RootState) => state.productSlice.productSames;
 export const productsOfCateSelector = (state: RootState) => state.productSlice.productsOfCate;
+export const productSearchSelector = (state: RootState) => state.productSlice.productSearch;
 export const filtersSelector = (state: RootState) => state.filterSlice;
 export const checkUserEmailSelector = (state: RootState) => state.userSlice.checkUerEmail;
 export const checkUserPhonenumberSelector = (state: RootState) => state.userSlice.checkUserPhone;
-export const UsersSelector = (state:RootState) => state.userSlice.users;
-export const CartSelector = (state: RootState) => state.cartSlice.cart;
+export const UsersSelector = (state: RootState) => state.userSlice.users;
 export const checkUserSelector = (state: RootState) => state.userSlice.checkUser;
 export const userSelector = (state: RootState) => state.userSlice.user;
+export const CartSelector = (state: RootState) => state.cartSlice.cart;
+export const CartBeforLogin = (state: RootState) => state.cartSlice.cartBeforLogin;
+export const totalProductSelector = (state: RootState) => state.cartSlice.totalProduct;
 
 export const productsOfCateRemainingSelector = createSelector(
   productsOfCateSelector,

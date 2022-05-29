@@ -3,13 +3,15 @@ import './HeaderTop.scss';
 import logo from '../../../images/logo.png';
 import cart from '../../../images/cart.png';
 import search from '../../../images/search-v1.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { toggleMenuRes } from 'app/toggleSlice/toggleSlice';
 import Avartar from '../../../images/noavatar.png';
 
 import { removeUser } from 'app/userSlice/userSlice';
-import { userSelector, checkUserSelector } from 'app/selectors';
+import { userSelector, checkUserSelector, totalProductSelector } from 'app/selectors';
+import { fetchAsyncSearchProduct } from 'app/productSlice/productSlice';
+
 interface HeaderProps {
   handleOpenSearch: (value: boolean) => void;
 }
@@ -19,11 +21,19 @@ const HeaderTop: React.FunctionComponent<HeaderProps> = (props) => {
   const user = useAppSelector(userSelector);
   const checkUser = useAppSelector(checkUserSelector);
   const dispatch = useAppDispatch();
+  const totalProduct = useAppSelector(totalProductSelector);
+  const [searchText, setSearchText] = React.useState<string>('');
   const handleClick: () => void = () => {
     dispatch(toggleMenuRes(true));
   };
+  const navigate = useNavigate();
+  const handleSearch = (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearchText('');
+    dispatch(fetchAsyncSearchProduct(searchText));
+    navigate('/product/search');
+  };
   React.useEffect(() => {
-    console.log(user);
     const handleHeader: () => void = () => {
       if (window.scrollY >= 120) {
         setShowHeadRespon(true);
@@ -36,7 +46,9 @@ const HeaderTop: React.FunctionComponent<HeaderProps> = (props) => {
       window.removeEventListener('scroll', handleHeader);
     };
   }, []);
+  React.useEffect(()=>{
 
+  },[])
   return (
     <div className={showHeadRespon ? 'header-top active-head' : 'header-top'}>
       <div className="container">
@@ -52,8 +64,13 @@ const HeaderTop: React.FunctionComponent<HeaderProps> = (props) => {
                 </Link>
               </div>
               <div className="search-wrap">
-                <form className="search_form">
-                  <input placeholder="Tìm kiếm" className="search_input" />
+                <form className="search_form" onSubmit={handleSearch}>
+                  <input
+                    placeholder="Tìm kiếm"
+                    className="search_input"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
                 </form>
               </div>
               <div className="tool-right">
@@ -73,7 +90,7 @@ const HeaderTop: React.FunctionComponent<HeaderProps> = (props) => {
                             <Link to={'#'}>Thông tin tài khoản</Link>
                           </li>
                           <li onClick={() => dispatch(removeUser(false))}>
-                            <Link to={'#'}>Đăng xuất</Link>
+                            <Link to={'/login'}>Đăng xuất</Link>
                           </li>
                         </ul>
                       </div>
@@ -96,10 +113,12 @@ const HeaderTop: React.FunctionComponent<HeaderProps> = (props) => {
                   )}
                 </div>
                 <div className="cart">
-                  <a>
+                  <Link to={'/cart'}>
                     <img src={cart} alt="" className="img-cart" />
-                    <span className="count">(0)</span>
-                  </a>
+                    <span className="count">
+                      ({totalProduct.totalQuantity ? totalProduct.totalQuantity : 0})
+                    </span>
+                  </Link>
                 </div>
               </div>
             </div>

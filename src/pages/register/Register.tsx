@@ -16,9 +16,10 @@ import {
   getUserAfterLogin,
   setCheckUser,
 } from 'app/userSlice/userSlice';
-import { fetchCeateCart } from 'app/cartSlice/cartSlice';
+import { fetchAsyncCreateCart } from 'app/cartSlice/cartSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ModalDialog from 'components/modalDialog/ModalDialog';
+
 
 const Register: React.FunctionComponent = () => {
   const initialValue: RegisterDatatype = {
@@ -46,7 +47,6 @@ const Register: React.FunctionComponent = () => {
   const [check, setCheck] = React.useState<boolean>(false);
   const [activeModal, setActiveModal] = React.useState<boolean>(false);
 
- 
   const dispatch = useAppDispatch();
   const userCheckEmail = useAppSelector(checkUserEmailSelector);
   const userCheckPhoneNumber = useAppSelector(checkUserPhonenumberSelector);
@@ -82,10 +82,12 @@ const Register: React.FunctionComponent = () => {
         })
       );
       dispatch(
-        fetchCeateCart({
+        fetchAsyncCreateCart({
           id: randomIdCart,
           categoryId: formValues.id,
           cart: [],
+          totalAmount: 0,
+          totalQuantity: 0,
         })
       );
       dispatch(
@@ -99,7 +101,6 @@ const Register: React.FunctionComponent = () => {
       );
       dispatch(setCheckUser(true));
       setActiveModal(true);
-      
     } else {
       setCheck(false);
     }
@@ -116,6 +117,7 @@ const Register: React.FunctionComponent = () => {
       ...formValues,
       id: randomId,
     });
+    
   }, []);
 
   return (

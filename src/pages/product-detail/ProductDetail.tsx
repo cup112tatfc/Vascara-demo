@@ -18,6 +18,14 @@ import { numberWithCommas } from 'utils/numberCommas/numberCommas';
 import { percentOff } from 'utils/percentOfftoFixed/percentOff';
 import useOutsideClick from 'utils/customHooks/useOutsideClick';
 import Loading from 'components/loading/Loading';
+import { ProductOfCart } from 'types/type.cart';
+import {
+  CheckProductOfCart,
+  PriceMain,
+  TotalPrice,
+} from 'utils/checkProductOfCart/CheckProductOfCart';
+import { AddtoCartBeforLogin } from 'app/cartSlice/cartSlice';
+import Popup from 'components/popup/Popup';
 
 const ProductDetail: React.FunctionComponent = () => {
   const { categoryId, productId } = useParams<string>();
@@ -26,8 +34,13 @@ const ProductDetail: React.FunctionComponent = () => {
   const productSames = useAppSelector(productSamesSelector);
   const [idTab, setIdTab] = React.useState<number>(1);
   const [quantity, setQuantity] = React.useState<number>(1);
-  const [choseSize, setChoseSize] = React.useState<any>(null);
-  console.log('choseSize', choseSize);
+  const [choseSize, setChoseSize] = React.useState<string | number>('');
+  const [checktoAdd, setCheckToAdd] = React.useState<boolean>(false);
+  const [add, setAdd] = React.useState<boolean>(false);
+  const [productOfCart, setProductOfCart] = React.useState<ProductOfCart>({} as ProductOfCart);
+  const [error, setError] = React.useState<string>('');
+  const [isOpenPropup, setIsOpenPropup] = React.useState<boolean>(false);
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (/\D/g.test(e.target.value)) {
       e.target.value = e.target.value.replace(/\D/g, '');
@@ -61,7 +74,18 @@ const ProductDetail: React.FunctionComponent = () => {
       setQuantity(quantity);
     }
   });
-
+  const handleCheck = (size: string | number) => {
+    CheckProductOfCart(product, size, productOfCart, setError, setCheckToAdd, setProductOfCart);
+  };
+  const handleAdd = () => {
+    if (checktoAdd || !product.sizes) {
+      dispatch(AddtoCartBeforLogin(productOfCart));
+      setIsOpenPropup(true);
+    } else {
+      setCheckToAdd(false);
+      setIsOpenPropup(false);
+    }
+  };
   React.useEffect(() => {
     dispatch(fetchAsyncProductId(productId));
     dispatch(fetchAsyncProductSames({ idCate: categoryId, idProduct: productId }));
@@ -71,14 +95,39 @@ const ProductDetail: React.FunctionComponent = () => {
       dispatch(removeProductSames([]));
     };
   }, [dispatch, productId, categoryId]);
+  React.useEffect(() => {
+    setProductOfCart({
+      ...productOfCart,
+      id: product.id,
+      categoryId: product.categoryId,
+      img: product.imgurls,
+      color: product.color,
+      name: product.name,
+      price: product.price,
+      priceOff: product.priceOff,
+      quantity: quantity,
+      priceMain: PriceMain(product),
+      totalPrice: PriceMain(product),
+      totalQuantity: product.total,
+    });
+  }, [product]);
+  React.useMemo(() => {
+    setProductOfCart({
+      ...productOfCart,
+      quantity: quantity,
+      totalPrice: quantity * productOfCart.priceMain,
+    });
+  }, [quantity]);
 
   return (
     <>
+      <Popup isOpen={isOpenPropup} closeOpen={(isOpenPropup) => setIsOpenPropup(isOpenPropup)} />
       {Object.keys(product).length === 0 ? (
         <Loading loadingBoolean={true} />
       ) : (
         <>
           <Loading loadingBoolean={false} />
+
           <div className="page-product">
             <div className="breadcrumb">
               <div className="container">
@@ -395,46 +444,67 @@ const ProductDetail: React.FunctionComponent = () => {
                           </span>
                         </del>
                       </span>
-                      {product.sizes && (
-                        <div className="group-attr group-size size cus-size">
-                          <div className="title-attr">Kích cỡ</div>
-                          <ul className="list-size">
-                            {product.sizes?.map((value, index) => (
-                              <li
-                                className={value === choseSize ? 'lisize active-size' : 'lisize'}
-                                key={index}
-                                onClick={() => setChoseSize(value)}
-                              >
-                                {value}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      <div className="group-attr quantity cus-quantity">
-                        <div className="title-attr">Số lượng</div>
-                        <div className="quantity-product">
-                          <div className="book-number" ref={bookNumberRef}>
-                            <div className="item-change minus" onClick={handleMinus}>
-                              -
+                      {product.total > 0 ? (
+                        <div>
+                          {product.sizes && (
+                            <div className="group-attr group-size size cus-size">
+                              <div className="title-attr">
+                                Kích cỡ
+                                <span className="error lbl-size-err">{error}</span>
+                              </div>
+                              <ul className="list-size">
+                                {product.sizes?.map((value, index) => (
+                                  <li
+                                    className={
+                                      value === choseSize ? 'lisize active-size' : 'lisize'
+                                    }
+                                    key={index}
+                                    onClick={() => {
+                                      setChoseSize(value);
+                                      handleCheck(value);
+                                    }}
+                                  >
+                                    {value}
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
-                            <div className="input-number">
-                              <input
-                                autoComplete="off"
-                                value={quantity}
-                                id="fquantity"
-                                onChange={handleInput}
-                              />
-                            </div>
-                            <div className="item-change plus" onClick={handlePlus}>
-                              +
+                          )}
+                          <div className="group-attr quantity cus-quantity">
+                            <div className="title-attr">Số lượng</div>
+                            <div className="quantity-product">
+                              <div className="book-number" ref={bookNumberRef}>
+                                <div className="item-change minus" onClick={handleMinus}>
+                                  -
+                                </div>
+                                <div className="input-number">
+                                  <input
+                                    autoComplete="off"
+                                    value={quantity}
+                                    id="fquantity"
+                                    onChange={handleInput}
+                                  />
+                                </div>
+                                <div className="item-change plus" onClick={handlePlus}>
+                                  +
+                                </div>
+                              </div>
+                              <div className="total-available">{product.total} sản phẩm có sẵn</div>
                             </div>
                           </div>
-                          <div className="total-available">{product.total} sản phẩm có sẵn</div>
+                          <div
+                            className="button buy-now"
+                            onClick={() => {
+                              handleCheck(choseSize);
+                              handleAdd();
+                            }}
+                          >
+                            MUA NGAY
+                          </div>
                         </div>
-                      </div>
-                      <div className="button buy-now">MUA NGAY</div>
-                      <div className="button add-to-card">Thêm vào giỏ hàng</div>
+                      ) : (
+                        <span className="out-of-stock">Sản phẩm Tạm hết hàng </span>
+                      )}
                       <div className="promotion-content">
                         <div className="item-promotion fgift">
                           <strong>

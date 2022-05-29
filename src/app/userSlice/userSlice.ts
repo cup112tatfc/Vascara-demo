@@ -20,7 +20,6 @@ export const fetchAsyncCheckUserPhonenumber = createAsyncThunk(
 
 export const fetchAsyncUsers = createAsyncThunk('user/fetchAsyncUsers', async () => {
   const response = await axios.get<User[]>(`${baseUrl}`);
-  console.log(response.data);
   return response.data;
 });
 
@@ -33,29 +32,33 @@ export const fetchRegister = createAsyncThunk('user/fetchRegister', async (newUs
     .catch(function (error) {
       console.log(error);
     });
-  console.log(response);
 });
-
+const value = localStorage.getItem('user');
 const initialState = {
   status: 'idle',
   checkUerEmail: {} as User,
   checkUserPhone: {} as User,
   users: [] as User[],
-  user: {} as User,
-  checkUser: false,
+  user: typeof value === 'string' ? (JSON.parse(value) as User) : ({} as User),
+  checkUser: typeof value === 'string' ? true : false,
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    removeUsers: (state, action) => {
+      state.users = [] as User[];
+    },
     removeChecEmail: (state, action) => {
       state.checkUerEmail = {} as User;
     },
     getUserAfterLogin: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      localStorage.setItem('user', JSON.stringify(action.payload));
     },
     removeUser: (state, action: PayloadAction<boolean>) => {
+      localStorage.removeItem('user');
       state.user = {} as User;
       state.checkUser = action.payload;
     },
@@ -82,5 +85,6 @@ const userSlice = createSlice({
       });
   },
 });
-export const { removeChecEmail, getUserAfterLogin, removeUser, setCheckUser } = userSlice.actions;
+export const { removeUsers, removeChecEmail, getUserAfterLogin, removeUser, setCheckUser } =
+  userSlice.actions;
 export default userSlice;

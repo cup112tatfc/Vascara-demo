@@ -39,7 +39,6 @@ export const fetchAsyncProductSames = createAsyncThunk(
     const response = await axios.get(
       `${baseUrl}/products?categoryId=${idCate}&id_ne=${idProduct}&_limit=8`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -48,6 +47,13 @@ export const fetchAsyncListProducts = createAsyncThunk(
   'productsOfCate/fetchAsyncListProducts',
   async (idCate: number) => {
     const response = await axios.get<Array<Product>>(`${baseUrl}/products?categoryId=${idCate}`);
+    return response.data;
+  }
+);
+export const fetchAsyncSearchProduct = createAsyncThunk(
+  'product/fetchAsyncSearchProduct',
+  async (wordSearch: string) => {
+    const response = await axios.get<Array<Product>>(`${baseUrl}/products?q=${wordSearch}`);
     return response.data;
   }
 );
@@ -60,6 +66,7 @@ const initialState = {
   productId: {} as Product,
   productSames: [],
   productsOfCate: [] as Array<Product>,
+  productSearch: [] as Array<Product>,
 };
 
 const productSlice = createSlice({
@@ -74,6 +81,9 @@ const productSlice = createSlice({
     },
     removeListProducts: (state, action: PayloadAction<any>) => {
       state.productsOfCate = action.payload;
+    },
+    removeProductSearch: (state, action: PayloadAction<any>) => {
+      state.productSearch = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -102,8 +112,12 @@ const productSlice = createSlice({
       })
       .addCase(fetchAsyncListProducts.fulfilled, (state, action) => {
         return { ...state, productsOfCate: action.payload };
+      })
+      .addCase(fetchAsyncSearchProduct.fulfilled, (state, action) => {
+        return { ...state, productSearch: action.payload };
       });
   },
 });
-export const { removeProductDetail, removeProductSames, removeListProducts } = productSlice.actions;
+export const { removeProductDetail, removeProductSames, removeListProducts, removeProductSearch } =
+  productSlice.actions;
 export default productSlice;

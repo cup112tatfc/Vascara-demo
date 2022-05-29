@@ -1,15 +1,14 @@
 import * as React from 'react';
 import './BoxSearchMobi.scss';
-import IconClose from '../../images/close1.png'
+import IconClose from '../../images/close1.png';
 
 export interface SearchProps {
-  toggle:boolean,
-  handleCloseSearch : (value:boolean) => void;
+  toggle: boolean;
+  handleCloseSearch: (value: boolean) => void;
 }
 const BoxSearchMobi: React.FunctionComponent<SearchProps> = (props) => {
-  console.log(props.toggle)
   return (
-    <div className={props.toggle ? "search-wrap-mobi active" : "search-wrap-mobi "}>
+    <div className={props.toggle ? 'search-wrap-mobi active' : 'search-wrap-mobi '}>
       <div className="ct-search">
         <div className="close disn" onClick={() => props.handleCloseSearch(false)}>
           <img src={IconClose} alt="" />

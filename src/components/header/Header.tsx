@@ -8,7 +8,6 @@ import BoxSearchMobi from 'components/box-search-mobi/BoxSearchMobi';
 
 const Header: React.FunctionComponent = () => {
   const [toggleSearch,setToggleSearch] = React.useState<boolean>(false);
-  console.log(toggleSearch);
   return (
     <div className="header">
       <HeaderTop handleOpenSearch = {(toggleSearch) => setToggleSearch(toggleSearch)}/>

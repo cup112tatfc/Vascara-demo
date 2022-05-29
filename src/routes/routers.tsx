@@ -4,15 +4,14 @@ import Home from 'pages/home/Home';
 import { RouterType } from '../types/type.router';
 import NewProducts from 'pages/new-products/NewProducts';
 import PromotionalProducts from 'pages/promotional-products/PromotionalProducts';
-import ShoesProducts from 'pages/shoes-products/ShoesProducts';
-import HandbagProducts from 'pages/handbag-products/HandbagProducts';
-import BagProducts from 'pages/bag-products/BagProducts';
-import AcessoryProducts from 'pages/accessory-products/AcessoryProducts';
 import News from 'pages/News/News';
 import PageNotFoundProps from 'pages/page-not-found/PageNotFound';
 import ProductDetail from 'pages/product-detail/ProductDetail';
 import ListProducts from 'pages/Page-list-products/ListProducts';
 import Forgotpass from 'pages/forgotpass/Forgotpass';
+import Cart from 'pages/cart/Cart';
+import SearchPage from 'pages/search/Search';
+import CheckoutPage from 'pages/checkout/Checkout';
 const routes: RouterType[] = [
   {
     path: '/',
@@ -27,13 +26,14 @@ const routes: RouterType[] = [
     element: Login,
   },
   {
-    path: '/vascara-new-arrival',
-    element: NewProducts,
-  },
-  {
     path: '/forgotpass',
     element: Forgotpass,
   },
+  {
+    path: '/vascara-new-arrival',
+    element: NewProducts,
+  },
+
   {
     path: '/vascara-sale-off',
     element: PromotionalProducts,
@@ -58,6 +58,19 @@ const routes: RouterType[] = [
     path: '/phu-kien/:categoryId/:productId',
     element: ProductDetail,
   },
+  {
+    path: '/cart',
+    element: Cart,
+  },
+  {
+    path: 'cart/checkout',
+    element: CheckoutPage,
+  },
+  {
+    path: '/product/search',
+    element: SearchPage,
+  },
+
   {
     path: '/tin-tuc',
     element: News,

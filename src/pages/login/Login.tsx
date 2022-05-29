@@ -4,10 +4,10 @@ import './Login.scss';
 import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { UsersSelector } from 'app/selectors';
 import { fetchAsyncUsers, getUserAfterLogin, setCheckUser } from 'app/userSlice/userSlice';
-import { checkLogin } from 'utils/AuthLogin/checkLogin';
+import { checkLogin } from 'utils/authLogin/checkLogin';
 import { User, userLogin } from 'types/type.auth';
 import ModalDialog from 'components/modalDialog/ModalDialog';
-import { authLoginToken } from 'utils/AuthLogin/service';
+
 
 export interface NoiNoUser {
   check: boolean;
@@ -33,12 +33,12 @@ const Login: React.FunctionComponent = () => {
   const [checkTokenName, setCheckTokenName] = React.useState<boolean>(false);
   const [formValues, setFormValues] = React.useState<userLogin>(initialValue);
   const [successLogin, setSuccessLogin] = React.useState<boolean>(false);
-  const [errorLogin, setErrorLogin] = React.useState<string>('');
+  const [errorEmorPhone, setErrorEmorPhone] = React.useState<string>('');
+  const [errorPass, setErrorPass] = React.useState<string>('');
   const [getuser, setGetUser] = React.useState<User>(user);
   const [activeModal, setActiveModal] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
   const users = useAppSelector(UsersSelector);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -51,14 +51,29 @@ const Login: React.FunctionComponent = () => {
       setCheckTokenName,
       setShowNoiNouser,
       showNoiNouser,
-      setErrorLogin,
+      setErrorEmorPhone,
+      setErrorPass,
       setSuccessLogin,
       setGetUser
     );
   };
+  const hanldleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleCheck('emOrPhone', formValues.emOrPhone);
+    } else {
+    }
+  };
+  const hanldleKeyDownPass = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleCheck('passwprd', formValues.password);
+    } else {
+    }
+  };
+
   React.useEffect(() => {
     dispatch(fetchAsyncUsers());
-    authLoginToken();
   }, [dispatch]);
   React.useEffect(() => {
     if (successLogin) {
@@ -67,7 +82,7 @@ const Login: React.FunctionComponent = () => {
       setActiveModal(true);
     }
   }, [successLogin]);
-  console.log(showNoiNouser, checkTokenName, users);
+
   return (
     <div>
       <ModalDialog
@@ -100,7 +115,7 @@ const Login: React.FunctionComponent = () => {
               >
                 <h3 className="fs-title">Email hoặc số điện thoại</h3>
                 <div id="error-step1" className="error hide">
-                  {errorLogin}
+                  {errorEmorPhone}
                 </div>
                 <input
                   name="emOrPhone"
@@ -108,6 +123,7 @@ const Login: React.FunctionComponent = () => {
                   className="emailphone"
                   placeholder="Nhập Email hoặc Số điện thoại"
                   onChange={handleChange}
+                  onKeyDown={hanldleKeyDown}
                 ></input>
                 <input
                   type="button"
@@ -178,6 +194,9 @@ const Login: React.FunctionComponent = () => {
                 )}
                 {checkTokenName && (
                   <div className="login-password">
+                    <div id="error-step1" className="error hide">
+                      {errorPass}
+                    </div>
                     <input
                       value={formValues.password}
                       name="password"
@@ -185,6 +204,7 @@ const Login: React.FunctionComponent = () => {
                       className="password"
                       type="password"
                       placeholder="Nhập mật khẩu"
+                      onKeyDown={hanldleKeyDownPass}
                       onChange={handleChange}
                     />
                     <input
